@@ -174,6 +174,12 @@ def rel_disp(bcolz_dir):
 
     # get rid of -999.0 mask value
     ds['vort'] = ds['vort'].where(ds['vort'] != -999.0)
+    delta = 0.1
+    xmax, xmin = ds.x.max()-delta, ds.x.min()+delta
+    ymax, ymin = ds.y.max()-delta, ds.y.min()+delta
+    mask = (ds.x[-1] > xmax) | (ds.x[-1] < xmin) | (ds.y[-1] > ymax) | (ds.y[-1] < ymin)
+    good_points = ~mask
+    ds = ds.where(good_points)
 
     deltax= R*(2*np.pi)/360. * np.cos((ds.y+ds.y.isel(time=0))/2. *np.pi/180.0)* (ds.x - ds.x.isel(time=0))
     deltay= R*(2*np.pi)/360. * (ds.y - ds.y.isel(time=0))
